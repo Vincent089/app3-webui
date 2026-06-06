@@ -66,11 +66,15 @@ export function DataTable<TData>({ data, columns, globalFilter, isLoading }: Dat
         </thead>
         <tbody>
           {isLoading ? (
-            <tr>
-              <td colSpan={columns.length} className="px-3 py-8 text-center text-muted-foreground">
-                Loading…
-              </td>
-            </tr>
+            Array.from({ length: 6 }).map((_, i) => (
+              <tr key={i} className="border-b">
+                {table.getAllColumns().map((col) => (
+                  <td key={col.id} className="px-3 py-2">
+                    <div className="h-4 animate-pulse rounded bg-muted" />
+                  </td>
+                ))}
+              </tr>
+            ))
           ) : table.getRowModel().rows.length === 0 ? (
             <tr>
               <td colSpan={columns.length} className="px-3 py-8 text-center text-muted-foreground">
