@@ -32,10 +32,12 @@ export interface Core {
   size: number
 }
 
-export interface Asn {
+export interface Company {
+  id: string
   gcode: string | null
-  number: number
-  scope: string
+  name: string
+  updated_at: string
+  created_at: string
 }
 
 export interface VlanRestriction {

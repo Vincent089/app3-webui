@@ -13,4 +13,6 @@ export interface FieldDef {
   readOnly?: boolean
   options?: SelectOption[]
   valueAsNumber?: boolean
+  optionsDependsOn?: string
+  optionsMap?: Record<string, SelectOption[]>
 }

@@ -4,6 +4,7 @@ import { useCores, useCreateCore, useUpdateCore, useDeleteCore } from '@/hooks/u
 import { coreColumns, coreFields } from '@/config/cores.config'
 import { DataTable } from '@/components/table/DataTable'
 import { ResourceModal } from '@/components/modal/ResourceModal'
+import { CoreGroupModal } from '@/components/cores/CoreGroupModal'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
@@ -17,10 +18,12 @@ export function CoresPage() {
   const [search, setSearch] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<Core | null>(null)
+  const [groupTarget, setGroupTarget] = useState<Core | null>(null)
 
   const columns = coreColumns(
     (row) => { setEditTarget(row); setModalOpen(true) },
     (row) => remove.mutate(row.id),
+    (row) => setGroupTarget(row),
   )
 
   function handleClose() { setModalOpen(false); setEditTarget(null) }
@@ -55,6 +58,14 @@ export function CoresPage() {
         initialValues={editTarget as any}
         title={editTarget ? 'Edit Core' : 'Add Core'}
       />
+      {groupTarget && (
+        <CoreGroupModal
+          open={true}
+          onClose={() => setGroupTarget(null)}
+          core={groupTarget}
+          allCores={data}
+        />
+      )}
     </div>
   )
 }

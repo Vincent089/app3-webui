@@ -1,5 +1,6 @@
-import type { UseFormRegister, FieldErrors } from 'react-hook-form'
-import type { FieldDef } from '@/types/table'
+import { useWatch } from 'react-hook-form'
+import type { UseFormRegister, FieldErrors, Control } from 'react-hook-form'
+import type { FieldDef, SelectOption } from '@/types/table'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select } from '@/components/ui/select'
@@ -11,10 +12,17 @@ interface ModalFieldProps {
   register: UseFormRegister<any>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors: FieldErrors<any>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  control?: Control<any>
   readOnlyValue?: string
 }
 
-export function ModalField({ field, register, errors, readOnlyValue }: ModalFieldProps) {
+export function ModalField({ field, register, errors, control, readOnlyValue }: ModalFieldProps) {
+  const dependentValue = useWatch({ control, name: field.optionsDependsOn ?? '__none__' })
+  const resolvedOptions: SelectOption[] = field.optionsDependsOn
+    ? (field.optionsMap?.[String(dependentValue)] ?? [])
+    : (field.options ?? [])
+
   const error = errors[field.key]?.message as string | undefined
 
   return (
@@ -49,7 +57,7 @@ export function ModalField({ field, register, errors, readOnlyValue }: ModalFiel
           })}
         >
           <option value="">Select…</option>
-          {field.options?.map((opt) => (
+          {resolvedOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
             </option>

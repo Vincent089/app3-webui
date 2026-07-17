@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { Vrf } from '@/types/api'
 import { useVrfs, useCreateVrf, useUpdateVrf, useDeleteVrf } from '@/hooks/useVrfs'
-import { useAsns } from '@/hooks/useAsns'
+import { useCompanies } from '@/hooks/useCompanies'
 import { vrfColumns, vrfCreateFields, vrfEditFields } from '@/config/vrfs.config'
 import { DataTable } from '@/components/table/DataTable'
 import { ResourceModal } from '@/components/modal/ResourceModal'
@@ -11,7 +11,7 @@ import { Plus } from 'lucide-react'
 
 export function VrfsPage() {
   const { data = [], isLoading } = useVrfs()
-  const { data: asns = [] } = useAsns()
+  const { data: companies = [] } = useCompanies()
   const create = useCreateVrf()
   const update = useUpdateVrf()
   const remove = useDeleteVrf()
@@ -52,8 +52,8 @@ export function VrfsPage() {
         open={modalOpen}
         onClose={handleClose}
         onSubmit={handleSubmit}
-        fields={vrfCreateFields(asns)}
-        editFields={vrfEditFields}
+        fields={vrfCreateFields(companies)}
+        editFields={vrfEditFields(companies)}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initialValues={editTarget as any}
         title={editTarget ? 'Edit VRF' : 'Add VRF'}

@@ -4,7 +4,7 @@ import { Layout } from '@/components/layout/Layout'
 import { VlansPage } from '@/pages/VlansPage'
 import { VrfsPage } from '@/pages/VrfsPage'
 import { CoresPage } from '@/pages/CoresPage'
-import { AsnsPage } from '@/pages/AsnsPage'
+import { CompaniesPage } from '@/pages/CompaniesPage'
 import { VlanRestrictionsPage } from '@/pages/VlanRestrictionsPage'
 
 export function App() {
@@ -18,7 +18,7 @@ export function App() {
           <Route path="/vrfs" element={<VrfsPage />} />
           <Route path="/vlanrestrictions" element={<VlanRestrictionsPage />} />
           <Route path="/cores" element={<CoresPage />} />
-          <Route path="/asns" element={<AsnsPage />} />
+          <Route path="/companies" element={<CompaniesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

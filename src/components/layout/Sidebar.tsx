@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { Network, Globe, ShieldAlert, Server, Hash } from 'lucide-react'
+import { Network, Globe, ShieldAlert, Server, Building2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const NAV_ITEMS = [
@@ -7,7 +7,7 @@ const NAV_ITEMS = [
   { label: 'VRFs', path: '/vrfs', Icon: Globe },
   { label: 'VLAN Restrictions', path: '/vlanrestrictions', Icon: ShieldAlert },
   { label: 'Cores', path: '/cores', Icon: Server },
-  { label: 'ASNs', path: '/asns', Icon: Hash },
+  { label: 'Companies', path: '/companies', Icon: Building2 },
 ]
 
 export function Sidebar() {

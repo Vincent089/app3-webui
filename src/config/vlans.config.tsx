@@ -1,8 +1,13 @@
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
-import type { Vlan } from '@/types/api'
-import type { Core } from '@/types/api'
-import type { FieldDef } from '@/types/table'
+import type { Vlan, Core, Company } from '@/types/api'
+import type { FieldDef, SelectOption } from '@/types/table'
 import { ActionsCell } from '@/components/table/ActionsCell'
+
+function gcodeOptions(companies: Company[]): SelectOption[] {
+  return companies
+    .filter((c) => c.gcode)
+    .map((c) => ({ label: `${c.gcode} — ${c.name}`, value: c.gcode! }))
+}
 
 const h = createColumnHelper<Vlan>()
 
@@ -26,7 +31,7 @@ export const vlanColumns = (onEdit: (row: Vlan) => void, onDelete: (row: Vlan) =
   }),
 ]
 
-export const vlanCreateFields = (cores: Core[]): FieldDef[] => [
+export const vlanCreateFields = (cores: Core[], companies: Company[]): FieldDef[] => [
   {
     key: 'core_id',
     label: 'Core',
@@ -37,14 +42,14 @@ export const vlanCreateFields = (cores: Core[]): FieldDef[] => [
   },
   { key: 'number', label: 'Number', type: 'number' },
   { key: 'subnet', label: 'Subnet', type: 'text', required: true },
-  { key: 'gcode', label: 'GCode', type: 'text', required: true },
+  { key: 'gcode', label: 'GCode', type: 'select', required: true, options: gcodeOptions(companies) },
   { key: 'purpose', label: 'Purpose', type: 'text', required: true },
   { key: 'name', label: 'Name', type: 'text' },
   { key: 'description', label: 'Description', type: 'textarea' },
 ]
 
-export const vlanEditFields: FieldDef[] = [
-  { key: 'gcode', label: 'GCode', type: 'text', required: true },
+export const vlanEditFields = (companies: Company[]): FieldDef[] => [
+  { key: 'gcode', label: 'GCode', type: 'select', required: true, options: gcodeOptions(companies) },
   { key: 'purpose', label: 'Purpose', type: 'text', required: true },
   { key: 'name', label: 'Name', type: 'text' },
   { key: 'description', label: 'Description', type: 'textarea' },

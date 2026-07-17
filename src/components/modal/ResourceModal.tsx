@@ -35,6 +35,7 @@ export function ResourceModal({
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, isSubmitting },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useForm<Record<string, any>>({ defaultValues: initialValues })
@@ -79,7 +80,7 @@ export function ResourceModal({
           />
         ))}
         {editableFields.map((f) => (
-          <ModalField key={f.key} field={f} register={register} errors={errors} />
+          <ModalField key={f.key} field={f} register={register} errors={errors} control={control} />
         ))}
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={onClose}>

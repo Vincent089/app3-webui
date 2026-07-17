@@ -1,7 +1,44 @@
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
-import type { Vrf, Asn } from '@/types/api'
-import type { FieldDef } from '@/types/table'
+import type { Vrf, Company } from '@/types/api'
+import type { FieldDef, SelectOption } from '@/types/table'
 import { ActionsCell } from '@/components/table/ActionsCell'
+
+function gcodeOptions(companies: Company[]): SelectOption[] {
+  return companies
+    .filter((c) => c.gcode)
+    .map((c) => ({ label: `${c.gcode} — ${c.name}`, value: c.gcode! }))
+}
+
+const DATACENTERS: SelectOption[] = [
+  { label: 'DDC', value: 'DDC' },
+  { label: 'MDC', value: 'MDC' },
+]
+
+const SCOPES: SelectOption[] = [
+  { label: 'legacy', value: 'legacy' },
+  { label: 'gdn', value: 'gdn' },
+  { label: 'datacenter', value: 'datacenter' },
+  { label: 'remote', value: 'remote' },
+]
+
+const SCOPE_SUBSCOPES: Record<string, SelectOption[]> = {
+  legacy: [],
+  gdn: [{ label: 'l3circuit', value: 'l3circuit' }],
+  datacenter: [
+    { label: 'snis', value: 'snis' },
+    { label: 'cloud', value: 'cloud' },
+    { label: 'ua', value: 'ua' },
+    { label: 'pbr', value: 'pbr' },
+    { label: 'hnas', value: 'hnas' },
+    { label: 'client', value: 'client' },
+  ],
+  remote: [{ label: 'client', value: 'client' }],
+}
+
+const QUALIFIERS: SelectOption[] = [
+  { label: 'legacy', value: 'legacy' },
+  { label: 'gaas', value: 'gaas' },
+]
 
 const h = createColumnHelper<Vrf>()
 
@@ -29,20 +66,19 @@ export const vrfColumns = (onEdit: (row: Vrf) => void, onDelete: (row: Vrf) => v
   }),
 ]
 
-export const vrfCreateFields = (asns: Asn[]): FieldDef[] => [
+export const vrfCreateFields = (companies: Company[]): FieldDef[] => [
+  { key: 'asn_number', label: 'ASN Number', type: 'number', required: true, valueAsNumber: true },
+  { key: 'gcode', label: 'GCode', type: 'select', required: true, options: gcodeOptions(companies) },
+  { key: 'datacenter', label: 'Datacenter', type: 'select', required: true, options: DATACENTERS },
+  { key: 'scope', label: 'Scope', type: 'select', required: true, options: SCOPES },
   {
-    key: 'asn_number',
-    label: 'ASN',
+    key: 'subscope',
+    label: 'Subscope',
     type: 'select',
-    required: true,
-    valueAsNumber: true,
-    options: asns.map((a) => ({ label: String(a.number), value: a.number })),
+    optionsDependsOn: 'scope',
+    optionsMap: SCOPE_SUBSCOPES,
   },
-  { key: 'gcode', label: 'GCode', type: 'text', required: true },
-  { key: 'datacenter', label: 'Datacenter', type: 'text', required: true },
-  { key: 'scope', label: 'Scope', type: 'text', required: true },
-  { key: 'subscope', label: 'Subscope', type: 'text', required: true },
-  { key: 'qualifier', label: 'Qualifier', type: 'text', required: true },
+  { key: 'qualifier', label: 'Qualifier', type: 'select', required: true, options: QUALIFIERS },
   { key: 'number', label: 'Number', type: 'number' },
   { key: 'name', label: 'Name', type: 'text' },
   { key: 'rd', label: 'RD', type: 'text' },
@@ -50,8 +86,8 @@ export const vrfCreateFields = (asns: Asn[]): FieldDef[] => [
   { key: 'description', label: 'Description', type: 'textarea' },
 ]
 
-export const vrfEditFields: FieldDef[] = [
-  { key: 'gcode', label: 'GCode', type: 'text', required: true },
+export const vrfEditFields = (companies: Company[]): FieldDef[] => [
+  { key: 'gcode', label: 'GCode', type: 'select', required: true, options: gcodeOptions(companies) },
   { key: 'name', label: 'Name', type: 'text' },
   { key: 'purpose', label: 'Purpose', type: 'text', required: true },
   { key: 'description', label: 'Description', type: 'textarea' },

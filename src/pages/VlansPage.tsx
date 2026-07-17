@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Vlan } from '@/types/api'
 import { useVlans, useCreateVlan, useUpdateVlan, useDeleteVlan } from '@/hooks/useVlans'
 import { useCores } from '@/hooks/useCores'
+import { useCompanies } from '@/hooks/useCompanies'
 import { vlanColumns, vlanCreateFields, vlanEditFields } from '@/config/vlans.config'
 import { DataTable } from '@/components/table/DataTable'
 import { ResourceModal } from '@/components/modal/ResourceModal'
@@ -12,6 +13,7 @@ import { Plus } from 'lucide-react'
 export function VlansPage() {
   const { data = [], isLoading } = useVlans()
   const { data: cores = [] } = useCores()
+  const { data: companies = [] } = useCompanies()
   const create = useCreateVlan()
   const update = useUpdateVlan()
   const remove = useDeleteVlan()
@@ -52,8 +54,8 @@ export function VlansPage() {
         open={modalOpen}
         onClose={handleClose}
         onSubmit={handleSubmit}
-        fields={vlanCreateFields(cores)}
-        editFields={vlanEditFields}
+        fields={vlanCreateFields(cores, companies)}
+        editFields={vlanEditFields(companies)}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initialValues={editTarget as any}
         title={editTarget ? 'Edit VLAN' : 'Add VLAN'}
