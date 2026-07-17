@@ -1,9 +1,10 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import type { Company } from '@/types/api'
 import { useCompanies, useCreateCompany, useUpdateCompany, useDeleteCompany } from '@/hooks/useCompanies'
-import { companyColumns, companyCreateFields, companyEditFields } from '@/config/companies.config'
+import { companyColumns } from '@/config/companies.config'
 import { DataTable } from '@/components/table/DataTable'
-import { ResourceModal } from '@/components/modal/ResourceModal'
+import { CompanyModal } from '@/components/company/CompanyModal'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
@@ -13,6 +14,7 @@ export function CompaniesPage() {
   const create = useCreateCompany()
   const update = useUpdateCompany()
   const remove = useDeleteCompany()
+  const navigate = useNavigate()
 
   const [search, setSearch] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
@@ -21,16 +23,18 @@ export function CompaniesPage() {
   const columns = companyColumns(
     (row) => { setEditTarget(row); setModalOpen(true) },
     (row) => remove.mutate(row.id),
+    (row) => navigate(`/companies/${row.id}`),
   )
 
   function handleClose() { setModalOpen(false); setEditTarget(null) }
 
   async function handleSubmit(body: Record<string, unknown>) {
     if (editTarget) {
-      await update.mutateAsync({ id: editTarget.id, body: body as { name: string } })
+      await update.mutateAsync({ id: editTarget.id, body })
     } else {
       await create.mutateAsync(body)
     }
+    handleClose()
   }
 
   return (
@@ -46,14 +50,11 @@ export function CompaniesPage() {
           <DataTable data={data} columns={columns} globalFilter={search} isLoading={isLoading} />
         </div>
       </div>
-      <ResourceModal
+      <CompanyModal
         open={modalOpen}
         onClose={handleClose}
         onSubmit={handleSubmit}
-        fields={companyCreateFields}
-        editFields={companyEditFields}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initialValues={editTarget as any}
+        initialValues={editTarget}
         title={editTarget ? 'Edit Company' : 'Add Company'}
       />
     </div>

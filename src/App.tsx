@@ -5,6 +5,7 @@ import { VlansPage } from '@/pages/VlansPage'
 import { VrfsPage } from '@/pages/VrfsPage'
 import { CoresPage } from '@/pages/CoresPage'
 import { CompaniesPage } from '@/pages/CompaniesPage'
+import { CompanyDetailPage } from '@/pages/CompanyDetailPage'
 import { VlanRestrictionsPage } from '@/pages/VlanRestrictionsPage'
 
 export function App() {
@@ -19,6 +20,7 @@ export function App() {
           <Route path="/vlanrestrictions" element={<VlanRestrictionsPage />} />
           <Route path="/cores" element={<CoresPage />} />
           <Route path="/companies" element={<CompaniesPage />} />
+          <Route path="/companies/:id" element={<CompanyDetailPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
