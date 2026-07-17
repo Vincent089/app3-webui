@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webui
+  namespace: app3
+  labels:
+    app: webui
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webui
+  template:
+    metadata:
+      labels:
+        app: webui
+    spec:
+      containers:
+        - name: webui
+          # TODO: replace with registry
+          image: app3-webui
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "50m"
+            limits:
+              memory: "512Mi"
+              cpu: "300m"
