@@ -1,4 +1,7 @@
 import { getToken, emitUnauthorized } from '@/lib/auth'
+import { ApiError, type ApiErrorPayload } from '@/lib/apiError'
+
+export { ApiError }
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const token = getToken()
@@ -16,8 +19,9 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   if (!res.ok) {
-    const text = await res.text().catch(() => '')
-    throw new Error(`${res.status}${text ? `: ${text}` : ''}`)
+    const json = await res.json().catch(() => null)
+    if (json?.error) throw new ApiError(json.error as ApiErrorPayload)
+    throw new Error(`${res.status}`)
   }
 
   if (res.status === 204) return undefined as T

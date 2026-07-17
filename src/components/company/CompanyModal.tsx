@@ -5,6 +5,7 @@ import { Dialog, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { ApiError } from '@/lib/apiError'
 
 const STANDARD_KEYS = new Set(['id', 'gcode', 'name', 'created_at', 'updated_at'])
 
@@ -31,6 +32,7 @@ export function CompanyModal({ open, onClose, onSubmit, initialValues, title }: 
   const [gcode, setGcode] = useState('')
   const [nameError, setNameError] = useState('')
   const [gcodeError, setGcodeError] = useState('')
+  const [formError, setFormError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [existingMeta, setExistingMeta] = useState<Pair[]>([])
   const [newPairs, setNewPairs] = useState<Pair[]>([])
@@ -49,6 +51,7 @@ export function CompanyModal({ open, onClose, onSubmit, initialValues, title }: 
     setNewPairs([])
     setNameError('')
     setGcodeError('')
+    setFormError('')
   }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function updateExistingValue(i: number, value: string) {
@@ -81,9 +84,33 @@ export function CompanyModal({ open, onClose, onSubmit, initialValues, title }: 
       if (key.trim()) payload[key.trim()] = value
     }
 
+    setFormError('')
     setSubmitting(true)
     try {
       await onSubmit(payload)
+    } catch (err) {
+      if (err instanceof ApiError) {
+        if (err.details) {
+          const fieldSetters: Record<string, (v: string) => void> = {
+            name: setNameError,
+            gcode: setGcodeError,
+          }
+          const spillover: string[] = []
+          for (const [field, messages] of Object.entries(err.details)) {
+            const setter = fieldSetters[field]
+            if (setter) {
+              setter(messages[0])
+            } else {
+              spillover.push(`${field}: ${messages[0]}`)
+            }
+          }
+          if (spillover.length) setFormError(spillover.join(' '))
+        } else {
+          setFormError(err.message)
+        }
+      } else {
+        setFormError('An unexpected error occurred.')
+      }
     } finally {
       setSubmitting(false)
     }
@@ -177,6 +204,11 @@ export function CompanyModal({ open, onClose, onSubmit, initialValues, title }: 
           <Plus className="h-3.5 w-3.5" /> Add field
         </Button>
 
+        {formError && (
+          <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {formError}
+          </p>
+        )}
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
           <Button type="submit" disabled={submitting}>{submitting ? 'Saving…' : 'Save'}</Button>
