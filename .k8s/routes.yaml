@@ -12,14 +12,9 @@ spec:
   rules:  
   - matches:
     - path:
-        type: Exact
+        type: PathPrefix
         value: '/'
-    filters:
-    - type: URLRewrite
-      urlRewrite:
-        path:
-          type: ReplaceFullPath
-          replaceFullPath: '/'
+    # Important to never use filters: URLRewrite here. This helps Kong proxy every app reload to the SPA router
     backendRefs:
     - name: webui
       kind: Service
