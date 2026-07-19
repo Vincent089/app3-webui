@@ -1,7 +1,8 @@
-import { trace } from '@opentelemetry/api'
+import { trace, diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api'
 import { registerInstrumentations } from '@opentelemetry/instrumentation'
 import { getWebAutoInstrumentations } from '@opentelemetry/auto-instrumentations-web'
 import { WebTracerProvider, BatchSpanProcessor } from '@opentelemetry/sdk-trace-web'
+import { resourceFromAttributes } from '@opentelemetry/resources'
 import { ZoneContextManager } from '@opentelemetry/context-zone'
 import { W3CTraceContextPropagator } from '@opentelemetry/core'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
@@ -14,10 +15,18 @@ export function initOtel(): void {
   if (initialized) return
   if (import.meta.env.VITE_OTEL_ENABLED !== 'true') return
 
-  const endpoint = import.meta.env.VITE_OTEL_EXPORTER_ENDPOINT ?? 'http://localhost:4318/v1/traces'
+  diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.WARN)
+
+  const endpoint = import.meta.env.VITE_OTEL_EXPORTER_ENDPOINT ?? '/api/otel/v1/traces'
+  // The exporter's fetch transport does `new URL(url)` with no base, which
+  // throws on a relative path — resolve against the current origin so a
+  // same-origin path like /api/otel/v1/traces (or an already-absolute URL)
+  // both work.
+  const url = new URL(endpoint, window.location.origin).toString()
 
   const provider = new WebTracerProvider({
-    spanProcessors: [new BatchSpanProcessor(new OTLPTraceExporter({ url: endpoint }))],
+    resource: resourceFromAttributes({ 'service.name': 'webui' }),
+    spanProcessors: [new BatchSpanProcessor(new OTLPTraceExporter({ url }))],
   })
 
   provider.register({

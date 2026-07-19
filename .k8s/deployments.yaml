@@ -24,9 +24,6 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
-          env:
-            - name: VITE_OTEL_ENABLED
-              value: "true"
           resources:
             requests:
               memory: "128Mi"
